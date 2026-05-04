@@ -10,17 +10,18 @@ android {
     targetSdkVersion 33
   }
 
-  /* just delete the signing configs if it doesn't work */
   signingConfigs {
     def keystorePropertiesFiles = rootProject.file("keystore.properties")
-    def keystoreProperties = new Properties()
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFiles))
+    if (keystorePropertiesFiles.exists()) {
+      def keystoreProperties = new Properties()
+      keystoreProperties.load(new FileInputStream(keystorePropertiesFiles))
 
-    basic {
-      storeFile file(keystoreProperties['storeFile'])
-      storePassword keystoreProperties['storePassword']
-      keyAlias keystoreProperties['keyAlias']
-      keyPassword keystoreProperties['keyPassword']
+      basic {
+        storeFile file(keystoreProperties['storeFile'])
+        storePassword keystoreProperties['storePassword']
+        keyAlias keystoreProperties['keyAlias']
+        keyPassword keystoreProperties['keyPassword']
+      }
     }
   }
 
@@ -30,10 +31,14 @@ android {
       shrinkResources true
       crunchPngs true
       proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-      signingConfig signingConfigs.basic
+      if (signingConfigs.hasProperty('basic')) {
+        signingConfig signingConfigs.basic
+      }
     }
     debug {
-      signingConfig signingConfigs.basic
+      if (signingConfigs.hasProperty('basic')) {
+        signingConfig signingConfigs.basic
+      }
     }
   }
 
